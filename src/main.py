@@ -1,4 +1,6 @@
 import tkinter as tk
+import cv2 as cv # use cv2 to show
+import numpy as np
 from tkinter import filedialog
 from PIL import Image, ImageTk
 
