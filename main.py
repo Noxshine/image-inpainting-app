@@ -1,23 +1,30 @@
+from copy import deepcopy
 import tkinter as tk
 from tkinter import filedialog
 import cv2  # use cv2 to show
 import numpy as np
 from PIL import Image, ImageTk, ImageOps, ImageDraw
 
+from libs.custom_mask import CustomMaskGenerator
+
 # Initialize a variable to store the current image
 current_image = None
+current_image_rgb = None
+shape = None
 eraser_size = 10  # Default eraser size
 edit_mode = False
 
 
 def choose_image():
     global current_image
+    global current_image_rgb
+
     file_path = filedialog.askopenfilename(
         filetypes=[("Image files", "*.jpg *.jpeg *.png")]
     )
     if file_path:
         # load_image(file_path)
-        current_image = load_image(file_path)
+        current_image, current_image_rgb = load_image(file_path)
         display_image(current_image)
 
 
@@ -28,9 +35,10 @@ def load_image(file_path):
     # Read the image using OpenCV
     img = cv2.imread(file_path)
     img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img_rgb = cv2.resize(img_rgb, (750, 750))
+    img_rgb_resize = cv2.resize(img_rgb, (750, 750))
 
-    return Image.fromarray(img_rgb)
+    # img_shape = img_rgb.shape
+    return Image.fromarray(img_rgb_resize), img_rgb
 
 
 def display_image(img):
@@ -45,14 +53,40 @@ def display_image(img):
     canvas.create_image(x, y, anchor=tk.NW, image=img)
     canvas.image = img  # Keep a reference to the image to avoid garbage collection
 
+def apply_mask_gererator():
+    global current_image
+    global current_image_rgb
+
+    if current_image:
+
+        # img = cv2.imread('E:/IMAGE/640366.jpg')
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # shape = img.shape
+        # print(type(current_image))
+        # print(type(current_image_rgb))
+        # # current_image = cv2.cvtColor(current_image, cv2.COLOR_BGR2RGB)
+        shape = current_image_rgb.shape
+        mask_generator = CustomMaskGenerator(shape[0], shape[1], 3, rand_seed=42)
+
+        # # Load mask
+        mask = mask_generator.sample()
+
+        # # Image + mask
+        masked_img = deepcopy(current_image_rgb)
+        masked_img[mask==0] = 255
+
+        masked_img = cv2.resize(masked_img, (750, 750))
+        current_image = Image.fromarray(masked_img)
+        display_image(current_image)
+
 
 def apply_grayscale():
     global current_image
     if current_image:
         # Convert to grayscale
         grayscale_image = ImageOps.grayscale(current_image)
-        display_image(grayscale_image)
         current_image = grayscale_image  # Update the current image to grayscale
+        display_image(current_image)
 
 
 # Function to toggle edit mode
@@ -114,7 +148,7 @@ edit_btn.pack(pady=10)
 grayscale_btn = tk.Button(side_frame, text="Grayscale", command=apply_grayscale)
 grayscale_btn.pack(pady=10)
 
-inpainting_btn = tk.Button(side_frame, text="Inpainting", command=apply_grayscale)
+inpainting_btn = tk.Button(side_frame, text="Inpainting", command=apply_mask_gererator)
 inpainting_btn.pack(pady=10)
 
 root.mainloop()
