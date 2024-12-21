@@ -92,14 +92,6 @@ def generate_image(
         iname = os.path.basename(ipath).replace('.jpg', '.png')
         print(f'Prcessing: {iname}')
 
-        # image = cv2.imread(ipath)
-        # image = cv2.resize(image, (512, 512))
-        # cv2.imwrite('./testImage/mask_image.png', image)
-        #
-        # mask = cv2.imread(mpath)
-        # mask = cv2.resize(mask, (512, 512))
-        # cv2.imwrite('./testImage/mask.png', mask)
-
         image = read_image(ipath)
         image = (torch.from_numpy(image).float().to(device) / 127.5 - 1).unsqueeze(0)
 
@@ -111,11 +103,11 @@ def generate_image(
             mask = torch.from_numpy(mask).float().to(device).unsqueeze(0)
             cv2.imwrite('../../data/mask_test.png', mask)
 
-        # z = torch.from_numpy(np.random.randn(1, model.z_dim)).to(device)
-        # output = model(image, mask, z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
-        # output = (output.permute(0, 2, 3, 1) * 127.5 + 127.5).round().clamp(0, 255).to(torch.uint8)
-        # output = output[0].cpu().numpy()
-        # PIL.Image.fromarray(output, 'RGB').save('../../data/output.png')
+        z = torch.from_numpy(np.random.randn(1, model.z_dim)).to(device)
+        output = model(image, mask, z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
+        output = (output.permute(0, 2, 3, 1) * 127.5 + 127.5).round().clamp(0, 255).to(torch.uint8)
+        output = output[0].cpu().numpy()
+        PIL.Image.fromarray(output, 'RGB').save('../../data/output.png')
 
 if __name__ == "__main__":
     generate_image(
@@ -124,9 +116,8 @@ if __name__ == "__main__":
         truncation_psi = 1,
         noise_mode = "const",
         mask_threshold = 1,
-        ipath = '../../data/mask_image.png',
-        mpath=None
-        # mpath = '../../data/mask.png',
+        ipath = '../../data/masked_img.png',
+        mpath = '../../data/mask.png',
     )
 
 
