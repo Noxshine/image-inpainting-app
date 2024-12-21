@@ -2,10 +2,9 @@ from copy import deepcopy
 import tkinter as tk
 from tkinter import filedialog
 import cv2  # use cv2 to show
-import numpy as np
 from PIL import Image, ImageTk, ImageOps, ImageDraw
 
-from libs.custom_mask import CustomMaskGenerator
+from libs.mask_generate.custom_mask import CustomMaskGenerator
 
 # Initialize a variable to store the current image
 current_image = None

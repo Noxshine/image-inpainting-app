@@ -6,8 +6,6 @@ from PIL import Image
 
 action_list = [[0, 1], [0, -1], [1, 0], [-1, 0]]
 
-
-
 class CustomMaskGenerator():
     def __init__(self, height=512, width=512, num_lines=20, num_circles=20, num_elips=20, rand_seed=None, channels=3):
         self.height = height
