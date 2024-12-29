@@ -52,7 +52,7 @@ def mask_generate(type:int, img):
     cv2.imwrite('../../data/mask.png', mask)
 
 if __name__ == "__main__":
-    img = cv2.imread('../../data/image_test.png')
+    img = cv2.imread('../../data/image-test.jpg')
     shape = img.shape
 
     # resize to 512x512
