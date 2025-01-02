@@ -1,7 +1,8 @@
-import os
+from random import randint, seed
+
 import cv2
 import numpy as np
-from random import randint, seed
+
 
 class CustomMaskGenerator1():
     def __init__(self, height=512, width=512, num_lines=20, num_circles=20, num_elips=20, rand_seed=None, channels=3):

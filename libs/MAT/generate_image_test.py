@@ -101,7 +101,7 @@ def generate_image(
         else:
             mask = RandomMask(resolution) # adjust the masking ratio by using 'hole_range'
             mask = torch.from_numpy(mask).float().to(device).unsqueeze(0)
-            cv2.imwrite('../../data/mask_test.png', mask)
+            # cv2.imwrite('../../data/mask_test.png', mask)
 
         z = torch.from_numpy(np.random.randn(1, model.z_dim)).to(device)
         output = model(image, mask, z, label, truncation_psi=truncation_psi, noise_mode=noise_mode)
