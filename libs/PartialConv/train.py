@@ -1,6 +1,5 @@
 import torch
 from torch.utils import data
-from torchvision import transforms
 from tqdm import tqdm
 
 from libs.PartialConv.util import opt
@@ -10,6 +9,7 @@ from libs.PartialConv.model.loss import InpaintingLoss
 from libs.PartialConv.model.model import VGG16FeatureExtractor, PConvUNet
 from libs.PartialConv.util.io import load_ckpt, save_ckpt
 from libs.PartialConv.util.places2 import Places2
+from libs.PartialConv.util.transform import img_tf, mask_tf
 
 IMAGE_SIZE = 512
 size = (IMAGE_SIZE, IMAGE_SIZE)
@@ -31,12 +31,7 @@ log_interval=10
 resume=str
 finetune='store_true'
 
-img_tf = transforms.Compose(
-    [transforms.Resize(size=size), transforms.ToTensor(),
-     transforms.Normalize(mean=opt.MEAN, std=opt.STD)])
 
-mask_tf = transforms.Compose(
-    [transforms.Resize(size=size), transforms.ToTensor()])
 
 class InfiniteSampler(data.sampler.Sampler):
     def __init__(self, num_samples):
