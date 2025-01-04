@@ -14,7 +14,7 @@ class InpaintingDataset(torch.utils.data.Dataset):
         self.mask_transform = mask_transform
 
         self.paths = glob('{:s}/*.jpg'.format(img_root))
-        self.mask_paths = glob('{:s}/*.png'.format(mask_root))
+        self.mask_paths = glob('{:s}/*.jpg'.format(mask_root))
         self.N_mask = len(self.mask_paths)
 
     def __getitem__(self, index):

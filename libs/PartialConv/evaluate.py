@@ -5,7 +5,7 @@ from torchvision.utils import make_grid
 from torchvision.utils import save_image
 
 from util.display import display
-from metrics.metric_utils import calculate_fid
+from metrics.metric_utils import calculate_fid, calculate_list, calculate_fid_test
 from model.model import PConvUNet
 from util.sampler import InfiniteSampler
 from util.io import load_ckpt
@@ -41,7 +41,8 @@ def evaluate_metric(snapshot, image_path, mask_path, batch_size = 4):
 
     data_eval = InpaintingDataset(image_path, mask_path, img_tf, mask_tf)
 
-    iter_eval = iter(data.DataLoader(
+    print(data_eval.__len__())
+    iter_val = iter(data.DataLoader(
         data_eval, batch_size=batch_size,
         sampler=InfiniteSampler(len(data_eval)),
         num_workers=8))
@@ -51,9 +52,9 @@ def evaluate_metric(snapshot, image_path, mask_path, batch_size = 4):
     gt = []
     output = []
 
-    for i in range(250):
+    for i in range(1):
         try:
-            gt_i, mask_i, masked_img_i = [x.to(device) for x in next(iter_eval)]
+            gt_i, mask_i, masked_img_i = [x.to(device) for x in next(iter_val)]
 
             # generate output
             with torch.no_grad():
@@ -75,13 +76,33 @@ def evaluate_metric(snapshot, image_path, mask_path, batch_size = 4):
     # calculate metric
     # prepare InceptionV3
     model_inception_v3 = InceptionV3(include_top=False, pooling='avg', input_shape=(299, 299, 3))
-    print(calculate_fid(model_inception_v3, gt, output))
+    # print(f"FID score: {calculate_fid(model_inception_v3, gt, output)}")
+    # print(f"PSNR score: {calculate_list(1, gt, output)}")
+    # print(f"SSIM score: {calculate_list(2, gt, output)}")
+    # print(f"L1 score: {calculate_list(3, gt, output)}")
 
+    print(f"FID score: {calculate_fid_test(model_inception_v3, gt[0], output[1])}")
+    display_z(gt[0], output[1])
 
+import matplotlib.pyplot as plt
+def display_z(gt_img, mask_img):
+    # matplotlib display
+    fig, axes = plt.subplots(1, 2, figsize=(16, 4))
+
+    axes[0].imshow(gt_img)
+    axes[0].set_title('ground truth')
+    axes[0].axis('off')
+
+    axes[1].imshow(mask_img)
+    axes[1].set_title('mask')
+    axes[1].axis('off')
+
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
     snapshot = '../../../pretrain_checkpoint/checkpoint-Partial-Conv-10000.pth'
     data_path = '../../../dataset/celeba_hq/val/female'
-    mask_path = '../../masks/mask_2'
+    mask_path = '../../masks/mask_1'
 
     evaluate_metric(snapshot, data_path, mask_path)

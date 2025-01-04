@@ -45,13 +45,13 @@ def mask_generate(type:int, img):
     plt.show()
 
 if __name__ == "__main__":
-    img = cv2.imread('../../data/image-test.jpg')
+    img = cv2.imread('../../data/jack-sparrow.jpg')
     shape = img.shape
 
     # resize to 512x512
     if shape[0] != 512 or shape[1] != 512:
         img = cv2.resize(img, (512, 512))
-        cv2.imwrite('../../data/image_test.png', img)
+        cv2.imwrite('../../data/jack-sparrow.png', img)
 
     # generate mask and image with mask to ./data
     mask_generate(1, img)

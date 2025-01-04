@@ -352,47 +352,80 @@
 #     return stats
 #
 #
-# def calculate_psnr(img1, img2):
-#     # img1 and img2 have range [0, 255]
-#     img1 = img1.astype(np.float64)
-#     img2 = img2.astype(np.float64)
-#     mse = np.mean((img1 - img2) ** 2)
-#     if mse == 0:
-#         return float('inf')
-#
-#     return 20 * math.log10(255.0 / math.sqrt(mse))
-#
-#
-# def calculate_ssim(img1, img2):
-#     C1 = (0.01 * 255) ** 2
-#     C2 = (0.03 * 255) ** 2
-#
-#     img1 = img1.astype(np.float64)
-#     img2 = img2.astype(np.float64)
-#     kernel = cv2.getGaussianKernel(11, 1.5)
-#     window = np.outer(kernel, kernel.transpose())
-#
-#     mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5]
-#     mu2 = cv2.filter2D(img2, -1, window)[5:-5, 5:-5]
-#     mu1_sq = mu1 ** 2
-#     mu2_sq = mu2 ** 2
-#     mu1_mu2 = mu1 * mu2
-#     sigma1_sq = cv2.filter2D(img1 ** 2, -1, window)[5:-5, 5:-5] - mu1_sq
-#     sigma2_sq = cv2.filter2D(img2 ** 2, -1, window)[5:-5, 5:-5] - mu2_sq
-#     sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
-#
-#     ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2))
-#
-#     return ssim_map.mean()
-#
-#
-# def calculate_l1(img1, img2):
-#     img1 = img1.astype(np.float64) / 255.0
-#     img2 = img2.astype(np.float64) / 255.0
-#     l1 = np.mean(np.abs(img1 - img2))
-#
-#     return l1
-#
+import math
+
+import cv2
+
+
+def calculate_psnr(img1, img2):
+    # img1 and img2 have range [0, 255]
+
+    img1 = img1.astype(np.float64)
+    img2 = img2.astype(np.float64)
+    mse = np.mean((img1 - img2) ** 2)
+    if mse == 0:
+        return float('inf')
+
+    return 20 * math.log10(255.0 / math.sqrt(mse))
+
+def calculate_ssim(img1, img2):
+    C1 = (0.01 * 255) ** 2
+    C2 = (0.03 * 255) ** 2
+
+    img1 = img1.astype(np.float64)
+    img2 = img2.astype(np.float64)
+    kernel = cv2.getGaussianKernel(11, 1.5)
+    window = np.outer(kernel, kernel.transpose())
+
+    mu1 = cv2.filter2D(img1, -1, window)[5:-5, 5:-5]
+    mu2 = cv2.filter2D(img2, -1, window)[5:-5, 5:-5]
+    mu1_sq = mu1 ** 2
+    mu2_sq = mu2 ** 2
+    mu1_mu2 = mu1 * mu2
+    sigma1_sq = cv2.filter2D(img1 ** 2, -1, window)[5:-5, 5:-5] - mu1_sq
+    sigma2_sq = cv2.filter2D(img2 ** 2, -1, window)[5:-5, 5:-5] - mu2_sq
+    sigma12 = cv2.filter2D(img1 * img2, -1, window)[5:-5, 5:-5] - mu1_mu2
+
+    ssim_map = ((2 * mu1_mu2 + C1) * (2 * sigma12 + C2)) / ((mu1_sq + mu2_sq + C1) * (sigma1_sq + sigma2_sq + C2))
+
+    return ssim_map.mean()
+
+def calculate_l1(img1, img2):
+    img1 = img1.astype(np.float64) / 255.0
+    img2 = img2.astype(np.float64) / 255.0
+    l1 = np.mean(np.abs(img1 - img2))
+
+    return l1
+
+def calculate_list(type:1, list_gt, list_pred):
+	values = []
+
+	if type == 1:
+		for gt, pred in zip(list_gt, list_pred):
+			# Ensure the images are of the same size
+			if gt.shape != pred.shape:
+				raise ValueError("Ground truth and predicted image sizes do not match.")
+
+			val = calculate_psnr(gt, pred)
+			values.append(val)
+	elif type == 2:
+		for gt, pred in zip(list_gt, list_pred):
+			# Ensure the images are of the same size
+			if gt.shape != pred.shape:
+				raise ValueError("Ground truth and predicted image sizes do not match.")
+
+			val = calculate_ssim(gt, pred)
+			values.append(val)
+	elif type == 3:
+		for gt, pred in zip(list_gt, list_pred):
+			# Ensure the images are of the same size
+			if gt.shape != pred.shape:
+				raise ValueError("Ground truth and predicted image sizes do not match.")
+
+			val = calculate_l1(gt, pred)
+			values.append(val)
+	return np.mean(values)
+
 import numpy as np
 from numpy import cov
 from numpy import asarray
@@ -400,7 +433,6 @@ from numpy import trace
 from numpy import iscomplexobj
 from scipy.linalg import sqrtm
 from skimage.transform import resize
-from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.applications.inception_v3 import preprocess_input
 
 # FID - frechet inception distance
@@ -447,3 +479,62 @@ def calculate_fid(model, img1, img2):
 	# calculate score
 	fid = ssdiff + trace(sigma1 + sigma2 - 2.0 * covmean)
 	return fid
+
+def calculate_fid_test(model, img1, img2):
+	# convert integer to floating point values
+	# img1 = np.expand_dims(img1, axis=0)
+	# img2 = np.expand_dims(img2, axis=0)
+
+	images1 = img1.astype('float32')
+	images2 = img2.astype('float32')
+
+	# resize images
+	images1 = scale_images(images1, (299, 299, 3))
+	images2 = scale_images(images2, (299, 299, 3))
+
+	# pre-process images
+	images1 = preprocess_input(images1)
+	images2 = preprocess_input(images2)
+
+	# calculate activations
+	act1 = model.predict(images1)
+	act2 = model.predict(images2)
+
+	# # calculate mean and covariance statistics
+	mu1, sigma1 = act1.mean(axis=0), cov(act1, rowvar=False)
+	mu2, sigma2 = act2.mean(axis=0), cov(act2, rowvar=False)
+	# calculate sum squared difference between means
+	ssdiff = np.sum((mu1 - mu2)**2.0)
+	# calculate sqrt of product between cov
+	covmean = sqrtm(sigma1.dot(sigma2))
+	# check and correct imaginary numbers from sqrt
+	if iscomplexobj(covmean):
+		covmean = covmean.real
+	# calculate score
+	fid = ssdiff + trace(sigma1 + sigma2 - 2.0 * covmean)
+	return fid
+
+from tensorflow.keras.applications import InceptionV3
+import matplotlib.pyplot as plt
+def display_z(gt_img, mask_img):
+    # matplotlib display
+    fig, axes = plt.subplots(1, 2, figsize=(16, 4))
+
+    axes[0].imshow(gt_img)
+    axes[0].set_title('ground truth')
+    axes[0].axis('off')
+
+    axes[1].imshow(mask_img)
+    axes[1].set_title('mask')
+    axes[1].axis('off')
+
+    plt.tight_layout()
+    plt.show()
+
+if __name__ == "__main__":
+	img1 = cv2.imread('../../../data/image_test.png')
+	img2 = cv2.imread('../../../data/jack-sparrow.png')
+
+	model_inception_v3 = InceptionV3(include_top=False, pooling='avg', input_shape=(299, 299, 3))
+	print(f"FID score: {calculate_fid(model_inception_v3, img1, img2)}")
+	display_z(img1, img2)
