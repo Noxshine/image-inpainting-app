@@ -1,8 +1,8 @@
-import matplotlib.pyplot as plt
 import torch
 from PIL import Image
 from torchvision.utils import save_image
 
+from util.display import display
 from model.model import PConvUNet
 from util.transform import reverse_transform, unnormalize, img_tf, mask_tf
 from util.io import load_ckpt
@@ -53,31 +53,9 @@ def test_example(image_path, mask_path, img_transform, mask_transform):
     output = output.squeeze(0).permute(1, 2, 0).detach().cpu().numpy()
     display(gt_img, mask_img, masked_save, output)
 
-def display(gt_img, mask_img, masked_img, output):
-    # matplotlib display
-    fig, axes = plt.subplots(1, 4, figsize=(16, 4))
-
-    axes[0].imshow(gt_img)
-    axes[0].set_title('ground truth')
-    axes[0].axis('off')
-
-    axes[1].imshow(mask_img)
-    axes[1].set_title('mask')
-    axes[1].axis('off')
-
-    axes[2].imshow(masked_img)
-    axes[2].set_title('masked image')
-    axes[2].axis('off')
-
-    axes[3].imshow(output)
-    axes[3].set_title('output')
-    axes[3].axis('off')
-
-    plt.tight_layout()
-    plt.show()
 
 if __name__ == "__main__":
     image_path = '../../data/messi.jpg'
-    masks_path = '../../data/000001.jpg'
+    masks_path = '../../masks/mask_1/000001.jpg'
 
     test_example(image_path, masks_path, img_tf, mask_tf)

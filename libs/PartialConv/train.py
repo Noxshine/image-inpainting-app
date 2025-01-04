@@ -2,14 +2,14 @@ import torch
 from torch.utils import data
 from tqdm import tqdm
 
-from libs.PartialConv.util import opt
-import numpy as np
+from util import opt
 
-from libs.PartialConv.model.loss import InpaintingLoss
-from libs.PartialConv.model.model import VGG16FeatureExtractor, PConvUNet
-from libs.PartialConv.util.io import load_ckpt, save_ckpt
-from libs.PartialConv.util.places2 import Places2
-from libs.PartialConv.util.transform import img_tf, mask_tf
+from model.loss import InpaintingLoss
+from model.model import VGG16FeatureExtractor, PConvUNet
+from util.io import load_ckpt, save_ckpt
+from util.places2 import Places2
+from util.sampler import InfiniteSampler
+from util.transform import img_tf, mask_tf
 
 IMAGE_SIZE = 512
 size = (IMAGE_SIZE, IMAGE_SIZE)
@@ -30,29 +30,6 @@ log_interval=10
 
 resume=str
 finetune='store_true'
-
-
-
-class InfiniteSampler(data.sampler.Sampler):
-    def __init__(self, num_samples):
-        self.num_samples = num_samples
-
-    def __iter__(self):
-        return iter(self.loop())
-
-    def __len__(self):
-        return 2 ** 31
-
-    def loop(self):
-        i = 0
-        order = np.random.permutation(self.num_samples)
-        while True:
-            yield order[i]
-            i += 1
-            if i >= self.num_samples:
-                np.random.seed()
-                order = np.random.permutation(self.num_samples)
-                i = 0
 
 def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

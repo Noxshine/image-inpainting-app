@@ -35,7 +35,7 @@ def mask_generate(type:int, img):
     masked_img[mask==0] = 255
     #
     cv2.imwrite('../../data/masked_img.png', masked_img)
-    cv2.imwrite('../../data/mask.png', mask)
+    cv2.imwrite('../../masks/mask_2/mask3.png', mask * 255)
 
   # Show side by side
     _, axes = plt.subplots(1, 3, figsize=(20, 5))
@@ -54,4 +54,4 @@ if __name__ == "__main__":
         cv2.imwrite('../../data/image_test.png', img)
 
     # generate mask and image with mask to ./data
-    mask_generate(2, img)
+    mask_generate(1, img)

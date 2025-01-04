@@ -26,3 +26,14 @@ def reverse_transform(tensor, mean=MEAN, std=STD):
     tensor = tensor * torch.tensor(std).view(-1, 1, 1)  # Apply std for each channel
     tensor = tensor + torch.tensor(mean).view(-1, 1, 1)  # Apply mean for each channel
     return tensor
+
+def reverse_transform_list(tensor, mean=MEAN, std=STD):
+    resutl = []
+    for ts in tensor:
+        # Undo the normalization by multiplying by std and adding the mean
+        ts = ts * torch.tensor(std).view(-1, 1, 1)  # Apply std for each channel
+        ts = ts + torch.tensor(mean).view(-1, 1, 1)  # Apply mean for each channel
+
+        resutl.append(ts)
+
+    return resutl
