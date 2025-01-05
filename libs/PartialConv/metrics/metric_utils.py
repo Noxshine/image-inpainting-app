@@ -536,5 +536,5 @@ if __name__ == "__main__":
 	img2 = cv2.imread('../../../data/jack-sparrow.png')
 
 	model_inception_v3 = InceptionV3(include_top=False, pooling='avg', input_shape=(299, 299, 3))
-	print(f"FID score: {calculate_fid(model_inception_v3, img1, img2)}")
+	print(f"FID score: {calculate_fid_test(model_inception_v3, img1, img2)}")
 	display_z(img1, img2)
