@@ -33,7 +33,7 @@ def test_example(image_path, mask_path, img_transform, mask_transform):
     # create image with mask - save to .data
     masked_img = gt * mask
     masked_save = reverse_transform(masked_img)
-    save_image(masked_save, '../../data/masked_img.png')
+    save_image(masked_save, '../../../data/masked_img.png')
 
     # gt_img = torch.tensor(gt).unsqueeze(0)  # Add batch dimension (assuming image is in HWC format)
     mask = torch.tensor(mask).unsqueeze(0)
@@ -46,7 +46,7 @@ def test_example(image_path, mask_path, img_transform, mask_transform):
     # convert output to image and save
     output = output.to(torch.device('cpu'))
     output = unnormalize(output)
-    save_image(output, '../../data/output.png')
+    save_image(output, '../../../data/output.png')
 
     # matplotlib display
     masked_save = masked_save.permute(1, 2, 0).detach().cpu().numpy()
@@ -55,7 +55,7 @@ def test_example(image_path, mask_path, img_transform, mask_transform):
 
 
 if __name__ == "__main__":
-    image_path = '../../data/messi.jpg'
-    masks_path = '../../masks/mask_1/000001.jpg'
+    image_path = '../../../data/messi.jpg'
+    masks_path = '../../../masks/mask_1/000001.jpg'
 
     test_example(image_path, masks_path, img_tf, mask_tf)

@@ -305,7 +305,7 @@ def convert_network_pickle(source, dest, force_fp16):
         --dest=stylegan2-cat-config-f.pkl
     """
     print(f'Loading "{source}"...')
-    with dnnlib.util.open_url(source) as f:
+    with src.libs.MAT.dnnlib.util.open_url(source) as f:
         data = load_network_pkl(f, force_fp16=force_fp16)
     print(f'Saving "{dest}"...')
     with open(dest, 'wb') as f:

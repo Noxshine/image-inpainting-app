@@ -5,9 +5,9 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-from libs.MAT.datasets.mask_generator_256 import RandomMask
-from libs.mask_generate.custom_mask_1 import CustomMaskGenerator1
-from libs.mask_generate.custom_mask_2 import CustomMaskGenerator2
+from src.libs.MAT.datasets.mask_generator_256 import RandomMask
+from src.libs.mask_generate.custom_mask_1 import CustomMaskGenerator1
+from src.libs.mask_generate.custom_mask_2 import CustomMaskGenerator2
 
 
 def mask_generate(type:int, img, mask_dir, masked_dir):

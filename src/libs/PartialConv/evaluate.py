@@ -102,7 +102,7 @@ def display_z(gt_img, mask_img):
 
 if __name__ == "__main__":
     snapshot = '../../../pretrain_checkpoint/checkpoint-Partial-Conv-10000.pth'
-    data_path = '../../../dataset/celeba_hq/val/female'
-    mask_path = '../../masks/mask_1'
+    data_path = '../../../../dataset/celeba_hq/val/female'
+    mask_path = '../../../masks/mask_1'
 
     evaluate_metric(snapshot, data_path, mask_path)

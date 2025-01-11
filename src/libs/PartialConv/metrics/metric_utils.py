@@ -532,8 +532,8 @@ def display_z(gt_img, mask_img):
     plt.show()
 
 if __name__ == "__main__":
-	img1 = cv2.imread('../../../data/image_test.png')
-	img2 = cv2.imread('../../../data/jack-sparrow.png')
+	img1 = cv2.imread('../../../../data/image_test.png')
+	img2 = cv2.imread('../../../../data/jack-sparrow.png')
 
 	model_inception_v3 = InceptionV3(include_top=False, pooling='avg', input_shape=(299, 299, 3))
 	print(f"FID score: {calculate_fid_test(model_inception_v3, img1, img2)}")

@@ -4,7 +4,7 @@ from tkinter import filedialog
 import cv2  # use cv2 to show
 from PIL import Image, ImageTk, ImageOps, ImageDraw
 
-from libs.mask_generate.custom_mask_1 import CustomMaskGenerator
+from src.libs.mask_generate.custom_mask_1 import CustomMaskGenerator
 
 # Initialize a variable to store the current image
 current_image = None
