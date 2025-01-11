@@ -1,4 +1,4 @@
-
+import argparse
 from copy import deepcopy
 
 import cv2
@@ -10,7 +10,7 @@ from libs.mask_generate.custom_mask_1 import CustomMaskGenerator1
 from libs.mask_generate.custom_mask_2 import CustomMaskGenerator2
 
 
-def mask_generate(type:int, img):
+def mask_generate(type:int, img, mask_dir, masked_dir):
     mask=None
     if type==1:
         # Instantiate mask generator
@@ -33,9 +33,12 @@ def mask_generate(type:int, img):
 
     masked_img = deepcopy(img)
     masked_img[mask==0] = 255
-    #
-    cv2.imwrite('../../data/masked_img.png', masked_img)
-    cv2.imwrite('../../masks/mask_2/mask3.png', mask * 255)
+
+    # save mask
+    cv2.imwrite(mask_dir, mask * 255)
+
+    # save masked image
+    cv2.imwrite(masked_dir, masked_img)
 
   # Show side by side
     _, axes = plt.subplots(1, 3, figsize=(20, 5))
@@ -45,13 +48,21 @@ def mask_generate(type:int, img):
     plt.show()
 
 if __name__ == "__main__":
-    img = cv2.imread('../../data/jack-sparrow.jpg')
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--type', type=int, default=1)
+    parser.add_argument('--image_dir', type=str, default='../../data/image-test.jpg')
+    parser.add_argument('--mask_dir', type=str, default='../../data/mask.png')
+    parser.add_argument('--masked_dir', type=str, default='../../data/masked-img.png')
+    args = parser.parse_args()
+
+    img = cv2.imread(args.image_dir)
     shape = img.shape
 
     # resize to 512x512
     if shape[0] != 512 or shape[1] != 512:
         img = cv2.resize(img, (512, 512))
-        cv2.imwrite('../../data/jack-sparrow.png', img)
+        cv2.imwrite(args.image_dir, img)
 
     # generate mask and image with mask to ./data
-    mask_generate(1, img)
+    mask_generate(args.type, img, args.mask_dir, args.masked_dir)
