@@ -56,13 +56,14 @@ def test_example(image_path, mask_path, img_transform = img_tf, mask_transform =
     display(gt_img, mask_img, masked_save, output)
 
 
-def test_func(masked_img, mask, img_transform = img_tf, mask_transform = mask_tf):
+def predict_PConv(gt_img, mask_img, img_transform = img_tf, mask_transform = mask_tf):
     model = PConvUNet().to(device)
     load_ckpt(snapshot, [('model', model)])
 
     # load image
-    masked_img = mask_transform(masked_img.convert('RGB'))
-    mask = mask_transform(mask.convert('RGB'))
+    gt = img_transform(gt_img.convert('RGB'))
+    mask = mask_transform(mask_img.convert('RGB'))
+    masked_img = gt * mask
 
     mask = torch.tensor(mask).unsqueeze(0)
     masked_img = torch.tensor(masked_img).unsqueeze(0)

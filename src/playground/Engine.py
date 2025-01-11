@@ -4,7 +4,7 @@ from PIL import Image, ImageTk, ImageOps, ImageDraw
 import cv2  # use cv2 to show
 import numpy as np
 
-from libs.PartialConv.test import test_func
+from libs.PartialConv.test import predict_PConv
 
 GEOMETRY_X=1400
 GEOMETRY_Y=600
@@ -134,6 +134,6 @@ class Engine:
 
     # -----------------------------------------------------------------------------------------------------------------
     def predict(self):
-        predict = test_func(self.img, self.mask)
+        predict = predict_PConv(self.org_img, self.mask)
         display_image(self.canvas2, predict)
         # print(type(predict))
